@@ -1,6 +1,7 @@
 package gr.aueb.cf.schoolapp.model;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -29,6 +30,7 @@ public class Teacher extends AbstractEntity {              // για να κλη
     private String firstname;
     private String lastname;
 
+    @Setter(AccessLevel.PACKAGE)                           // package-private setter για να μην μπορεί να αλλάξει το Region από έξω μόνο να προσθέτουμε ή να αφαιρούμε αντικείμενα με addTeacher και removeTeacher
     @JoinColumn(name = "region_id")                        // foreign key column name
     @ManyToOne(fetch = FetchType.LAZY)                     // εδώ το default είναι EAGER, αλλά το αλλάζουμε σε LAZY για να μην επιβαρύνεται το app
     private Region region;

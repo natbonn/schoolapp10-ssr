@@ -24,7 +24,7 @@ public class Region {                      // παραμετρικός πίνα�
     @Column(unique = true, nullable = false)
     private String name;
 
-    @Getter(AccessLevel.PACKAGE)
+    @Getter(AccessLevel.PACKAGE)                           // package-private getter για να μην μπορεί να αλλάξει το Set από έξω μόνο να προσθέτουμε ή να αφαιρούμε αντικείμενα με addTeacher και removeTeacher
     @Setter(AccessLevel.NONE)                               // δεν θέλουμε να αλλάζει το Set από έξω μόνο να προσθέτουμε ή να αφαιρούμε αντικείμενα με addTeacher και removeTeacher
     @OneToMany(mappedBy = "region", fetch = FetchType.LAZY)
     private Set<Teacher> teachers = new HashSet<>();        // όχι διπλότυπα
