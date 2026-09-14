@@ -35,6 +35,13 @@ public class Teacher extends AbstractEntity {              // για να κλη
     @ManyToOne(fetch = FetchType.LAZY)                     // εδώ το default είναι EAGER, αλλά το αλλάζουμε σε LAZY για να μην επιβαρύνεται το app
     private Region region;
 
+    // Constructor για τον mapper
+    public Teacher(String firstname, String lastname, String vat) {
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.vat = vat;
+    }
+
     @PrePersist
     public void initializeUUID() {
         if (uuid == null) this.uuid = UUID.randomUUID();   // if null new UUID is generated
