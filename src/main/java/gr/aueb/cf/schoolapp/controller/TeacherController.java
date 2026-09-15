@@ -36,19 +36,19 @@ public class TeacherController {
 
     @GetMapping("/insert")
     public String getTeacherForm(Model model) {
-        model.addAttribute("teacherInsertDTO", TeacherInsertDTO.empty());      // Όπως το έχουμε ονομάσει στο html file th:object
+        model.addAttribute("teacherInsertDTO", TeacherInsertDTO.empty());      // Όπως το έχουμε ονομάσει στο html file th:object  -  το empty έχει οριστεί με default τιμες στο dto ως μέθοδος
 //        model.addAttribute("regionsReadOnlyDTO", regions());                   // φτιάχνουμε μέθοδο που επιστρέφει τη λίστα
         return "teacher-insert";       // html page
     }
 
-    @PostMapping("/insert")
+    @PostMapping("/insert")            // έλεγχος από τον Controller
     public String teacherInsert(@Valid @ModelAttribute("teacherInsertDTO") TeacherInsertDTO teacherInsertDTO,
                                 BindingResult bindingResult, Model model,
                                 RedirectAttributes redirectAttributes) {
 
 //        teacherInsertValidator.validate(teacherInsertDTO, bindingResult);
 
-        // bean validation
+        // bean validation - syntax
         if (bindingResult.hasErrors()) {
 //            model.addAttribute("regionsReadOnlyDTO", regions());    // γίνεται auto λόγω της @ModelAttribute
             return "teacher-insert";    // γίνεται populate από το DTO με data

@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+// TODO Localization
 public record TeacherInsertDTO(
         // bean validationm
         @NotNull(message = "Το όνομα δεν μπορεί να είναι κενό")
