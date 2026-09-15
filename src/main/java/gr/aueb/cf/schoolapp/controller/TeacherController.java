@@ -74,7 +74,7 @@ public class TeacherController {
 
     @GetMapping("/success")
     public String teacherInsertSuccess(Model model) {
-        if (!model.containsAttribute("teacherInsertDTO")) {
+        if (!model.containsAttribute("teacherReadOnlyDTO")) {       // ελέγχει το F5
             return "redirect:/teachers";
         }
         return "teacher-success";
