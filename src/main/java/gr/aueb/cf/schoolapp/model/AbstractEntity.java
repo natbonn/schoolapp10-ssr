@@ -31,4 +31,14 @@ public abstract class AbstractEntity {          // Abstract class for common ent
     @Column(name = "updated_at", nullable = false, columnDefinition = "DATETIME")
     private Instant updatedAt;                  // Timestamp for when the entity was last updated
 
+    private boolean deleted;                   // boolean για να μην ειναι nullable ή Boolean(@Column(nullable=false)
+
+    // audit when deleted
+    @Column(name = "deleted_at", columnDefinition = "DATETIME")      // zone insensitive
+    private Instant deletedAt;                 // Instant διασφαλίζει ότι θα ειναι UTC ο χρόνος
+
+    public void softDelete() {
+        this.deleted = true;
+        this.deletedAt = Instant.now();         // σαν να λέμε new Instant (static factory)
+    }
 }
