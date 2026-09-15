@@ -1,10 +1,14 @@
 package gr.aueb.cf.schoolapp.controller;
 
+import gr.aueb.cf.schoolapp.core.exceptions.EntityAlreadyExistsException;
+import gr.aueb.cf.schoolapp.core.exceptions.EntityInvalidArgumentException;
 import gr.aueb.cf.schoolapp.dto.RegionReadOnlyDTO;
 import gr.aueb.cf.schoolapp.dto.TeacherInsertDTO;
+import gr.aueb.cf.schoolapp.dto.TeacherReadOnlyDTO;
 import gr.aueb.cf.schoolapp.model.Teacher;
 import gr.aueb.cf.schoolapp.service.IRegionService;
 import gr.aueb.cf.schoolapp.service.ITeacherService;
+import gr.aueb.cf.schoolapp.validator.TeacherInsertValidator;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +30,7 @@ public class TeacherController {
 
     private final ITeacherService teacherService;
     private final IRegionService regionService;
-//    private final TeacherInsertValidator teacherInsertValidator;
+    private final TeacherInsertValidator teacherInsertValidator;
 
 //    @Autowired             // το αποφεύγουμε λόγω @RequiredArgsConstructor
 //    public TeacherController(ITeacherService teacherService, IRegionService regionService) {
@@ -37,18 +41,17 @@ public class TeacherController {
     @GetMapping("/insert")
     public String getTeacherForm(Model model) {
         model.addAttribute("teacherInsertDTO", TeacherInsertDTO.empty());      // Όπως το έχουμε ονομάσει στο html file th:object  -  το empty έχει οριστεί με default τιμες στο dto ως μέθοδος
-//        model.addAttribute("regionsReadOnlyDTO", regions());                   // φτιάχνουμε μέθοδο που επιστρέφει τη λίστα
+//        model.addAttribute("regionsReadOnlyDTO", regions());                 // δεν χρειάζεται γιατι εχουμε παρακατω @ModelAttribute
         return "teacher-insert";       // html page
     }
 
-    @PostMapping("/insert")            // έλεγχος από τον Controller
+    @PostMapping("/insert")            // έλεγχος από τον Controller - bean validation - syntax
     public String teacherInsert(@Valid @ModelAttribute("teacherInsertDTO") TeacherInsertDTO teacherInsertDTO,
                                 BindingResult bindingResult, Model model,
                                 RedirectAttributes redirectAttributes) {
 
-//        teacherInsertValidator.validate(teacherInsertDTO, bindingResult);
+        teacherInsertValidator.validate(teacherInsertDTO, bindingResult);    // business rules
 
-        // bean validation - syntax
         if (bindingResult.hasErrors()) {
 //            model.addAttribute("regionsReadOnlyDTO", regions());    // γίνεται auto λόγω της @ModelAttribute
             return "teacher-insert";    // γίνεται populate από το DTO με data
@@ -56,10 +59,26 @@ public class TeacherController {
 
         try {
             // save τον teacher
-            // επιστρέφει ένα success page
-        } catch () {
+            TeacherReadOnlyDTO teacherReadOnlyDTO = teacherService.saveTeacher(teacherInsertDTO);
 
+            // επιστρέφει ένα success page
+
+            // PRG - Post-Redirect-Get (http code 302) - Προστασία από Refresh & Insert x2
+            redirectAttributes.addAttribute("teacherReadOnlyDTO", teacherReadOnlyDTO);       // για να υπάρχουν ξανά τα data
+            return "redirect:/teachers/success";                      // get controller success page
+        } catch (EntityAlreadyExistsException | EntityInvalidArgumentException e) {
+            model.addAttribute("errorMessage", e.getMessage());        // th:if="${errorMessage}"  - teacher-insert
+            return "teacher-insert";
         }
+    }
+
+    @GetMapping("/success")
+    public String teacherInsertSuccess(Model model) {
+        if (!model.containsAttribute("teacherInsertDTO")) {
+            return "redirect:/teachers";
+        }
+        return "teacher-success";
+
     }
 
 
