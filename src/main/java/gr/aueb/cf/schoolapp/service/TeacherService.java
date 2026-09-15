@@ -44,7 +44,8 @@ public class TeacherService implements ITeacherService {
             throws EntityAlreadyExistsException, EntityInvalidArgumentException {
 
         try {
-            if (dto.vat() != null && teacherRepository.findByVat(dto.vat()).isPresent()) {
+//            if (dto.vat() != null && teacherRepository.findByVat(dto.vat()).isPresent()) {
+            if (dto.vat() != null && isTeacherExistsByVat(dto.vat())) {
                 throw new EntityAlreadyExistsException("Teacher with VAT= " + dto.vat() + " already exists");
             }
 
