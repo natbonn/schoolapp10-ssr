@@ -64,7 +64,7 @@ public class TeacherController {
             // επιστρέφει ένα success page
 
             // PRG - Post-Redirect-Get (http code 302) - Προστασία από Refresh & Insert x2
-            redirectAttributes.addAttribute("teacherReadOnlyDTO", teacherReadOnlyDTO);       // για να υπάρχουν ξανά τα data
+            redirectAttributes.addFlashAttribute("teacherReadOnlyDTO", teacherReadOnlyDTO);       // για να υπάρχουν ξανά τα data
             return "redirect:/teachers/success";                      // get controller success page
         } catch (EntityAlreadyExistsException | EntityInvalidArgumentException e) {
             model.addAttribute("errorMessage", e.getMessage());        // th:if="${errorMessage}"  - teacher-insert
@@ -82,15 +82,15 @@ public class TeacherController {
     }
 
 
-    @ModelAttribute("regionsReadOnlyDTO")    // Εκτελείται πριν από κάθε request (get) handler
+    @ModelAttribute("regionsReadOnlyDTO")         // Εκτελείται πριν από κάθε request (get) handler
     public List<RegionReadOnlyDTO> region() {
-//        return regionService.findAllRegionsSortedByName();
+        return regionService.findAllRegionsSortedByName();
 
-        // dummy data
-        return List.of(
-                new RegionReadOnlyDTO(1L, "Αθήνα"),
-                new RegionReadOnlyDTO(2L, "Βόλος"),
-                new RegionReadOnlyDTO(3L, "Θεσσαλονίκη")
-        );
+//        // dummy data
+//        return List.of(
+//                new RegionReadOnlyDTO(1L, "Αθήνα"),
+//                new RegionReadOnlyDTO(2L, "Βόλος"),
+//                new RegionReadOnlyDTO(3L, "Θεσσαλονίκη")
+//        );
     }
 }
