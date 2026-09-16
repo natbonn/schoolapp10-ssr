@@ -1,6 +1,9 @@
 package gr.aueb.cf.schoolapp.repository;
 
 import gr.aueb.cf.schoolapp.model.Teacher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,4 +16,9 @@ public interface TeacherRepository extends JpaRepository<Teacher, Long> {
     Optional<Teacher> findByVat(String vat);            // υπονοείται equals -- Optional για να αποφύγουμε το Null- NullPointerException
     Optional<Teacher> findByUuid(UUID uuid);            // Όχι String είναι UUID Class
 
+    @EntityGraph(attributePaths = {"region"})         // JOIN region - για να αποφυγουμε Ν+1 queries λογω fetch=LAZY στο region & @Transactional στο Service
+    Page<Teacher> findAllByDeletedFalse(Pageable pageable);   // δεν θέλουμε τους deleted
+
+    Optional<Teacher> findByVatAndDeletedFalse(String vat);
+    Optional<Teacher> findByUuidAndDeletedFalse(UUID uuid);
 }

@@ -32,7 +32,7 @@ public class Teacher extends AbstractEntity {              // για να κλη
 
     @Setter(AccessLevel.PACKAGE)                           // package-private setter για να μην μπορεί να αλλάξει το Region από έξω μόνο να προσθέτουμε ή να αφαιρούμε αντικείμενα με addTeacher και removeTeacher
     @JoinColumn(name = "region_id")                        // foreign key column name
-    @ManyToOne(fetch = FetchType.LAZY)                     // εδώ το default είναι EAGER, αλλά το αλλάζουμε σε LAZY για να μην επιβαρύνεται το app
+    @ManyToOne(fetch = FetchType.LAZY)                     // ενα query δεν θα φέρει το region - default EAGER, αλλά το αλλάζουμε σε LAZY για ταχύτητα
     private Region region;
 
     // Constructor για τον mapper
