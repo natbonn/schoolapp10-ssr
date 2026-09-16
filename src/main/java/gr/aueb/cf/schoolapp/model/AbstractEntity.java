@@ -31,14 +31,16 @@ public abstract class AbstractEntity {          // Abstract class for common ent
     @Column(name = "updated_at", nullable = false, columnDefinition = "DATETIME")
     private Instant updatedAt;                  // Timestamp for when the entity was last updated
 
+    @Column(nullable = false)                  // λειτουργεί σαν flag - soft delete(update)
     private boolean deleted;                   // boolean για να μην ειναι nullable ή Boolean(@Column(nullable=false)
 
     // audit when deleted
     @Column(name = "deleted_at", columnDefinition = "DATETIME")      // zone insensitive
-    private Instant deletedAt;                 // Instant διασφαλίζει ότι θα ειναι UTC ο χρόνος
+    private Instant deletedAt;                 // Instant (στιγμη) διασφαλίζει ότι θα ειναι UTC ο χρόνος
 
+    // στην ουσία κάνουμε update την εγγραφή και τη flag-άρουμε ως deleted
     public void softDelete() {
         this.deleted = true;
-        this.deletedAt = Instant.now();         // σαν να λέμε new Instant (static factory)
+        this.deletedAt = Instant.now();         // σαν να λέμε new Instant (static factory οχι constructors πιο ευέλικτες)
     }
 }
