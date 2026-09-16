@@ -13,6 +13,8 @@ import gr.aueb.cf.schoolapp.repository.TeacherRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -68,7 +70,24 @@ public class TeacherService implements ITeacherService {
             log.warn("Save failed for teacher with VAT={}. Teacher exists.", dto.vat());                    // αυτό θα δει το log
             throw new EntityAlreadyExistsException("Teacher with VAT= " + dto.vat() + " already exists");   // για να δει αυτό ο Controller
         }
+    }
 
+    @Override
+    @Transactional(readOnly = true)            // query read only δεν κάνει αλλαγές
+    public Page<TeacherReadOnlyDTO> getPaginatedTeachersDeletedFalse(Pageable pageable) {
+        Page<Teacher> teachersPage = teacherRepository.findAllByDeletedFalse(pageable);
+        log.debug("Get paginated teachers not deleted, returned successfully page={}, size={}",
+                teachersPage.getNumber(), teachersPage.getSize());
+        return teachersPage.map(mapper::mapToTeacherReadOnlyDTO);       // .map από API του Page - περιμένει ένα λαμδα μετά ::
+    }
+
+    @Override
+    @Transactional(readOnly = true)            // query read only δεν κάνει αλλαγές
+    public Page<TeacherReadOnlyDTO> getPaginatedTeachers(Pageable pageable) {
+        Page<Teacher> teachersPage = teacherRepository.findAll(pageable);          // .findAll λόγω extending JPΑ που κανει extends τη PagingAndSortingRepository
+        log.debug("Get paginated teachers returned successfully page={}, size={}",
+                teachersPage.getNumber(), teachersPage.getSize());
+        return teachersPage.map(mapper::mapToTeacherReadOnlyDTO);       // .map από API του Page - περιμένει ένα λαμδα μετά ::
     }
 
     @Override
