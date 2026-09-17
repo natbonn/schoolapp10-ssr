@@ -3,6 +3,8 @@ package gr.aueb.cf.schoolapp.service;
 
 import gr.aueb.cf.schoolapp.core.exceptions.EntityAlreadyExistsException;
 import gr.aueb.cf.schoolapp.core.exceptions.EntityInvalidArgumentException;
+import gr.aueb.cf.schoolapp.core.exceptions.EntityNotFoundException;
+import gr.aueb.cf.schoolapp.dto.TeacherEditDTO;
 import gr.aueb.cf.schoolapp.dto.TeacherInsertDTO;
 import gr.aueb.cf.schoolapp.dto.TeacherReadOnlyDTO;
 import gr.aueb.cf.schoolapp.mapper.Mapper;
@@ -17,6 +19,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -72,8 +76,49 @@ public class TeacherService implements ITeacherService {
         }
     }
 
-    public TeacherReadOnlyDTO updateTeacher(TeacherEditDTO dto) {
+    @Override
+    @Transactional(rollbackFor = {EntityNotFoundException.class, EntityInvalidArgumentException.class, EntityAlreadyExistsException.class})
+    public TeacherReadOnlyDTO updateTeacher(TeacherEditDTO dto)
+            throws EntityNotFoundException, EntityAlreadyExistsException, EntityInvalidArgumentException {
 
+        try {
+            Teacher teacher = teacherRepository.findByUuidAndDeletedFalse(dto.uuid())
+                    .orElseThrow(() -> new EntityNotFoundException("Teacher with uuid=" + dto.uuid() + " not found"));
+
+            if (!teacher.getVat().equals(dto.vat())) {     // TODO - use Objects utility class for null safety
+                if (teacherRepository.findByVatAndDeletedFalse(dto.vat()).isPresent()) {              // αν κάνει edit και βάζει αφμ ίδιο με υπάρχων στη βάση
+                    throw new EntityAlreadyExistsException("Teacher with VAT= " + dto.vat() + " already exists");       // σταματαει
+                }
+                teacher.setVat(dto.vat());                         // τότε να το αλλάξει
+            }
+
+            teacher.setFirstname(dto.firstname());
+            teacher.setLastname(dto.lastname());
+
+            if(!Objects.equals(teacher.getRegion().getId(), dto.regionId())) {      // αν εχει αλλαξει το region - null safety
+                Region region = regionRepository.findById(dto.regionId())
+                        .orElseThrow(() -> new EntityInvalidArgumentException("Region id= " + dto.regionId() + " not found" ));
+                Region oldRegion = teacher.getRegion();
+
+                if(oldRegion.getId() != null) {
+                    oldRegion.removeTeacher(teacher);                 // & στους δύο πίνακες λόγω της σχέσης που έχουν οι 2 πίνακες
+                }
+                region.addTeacher(teacher);
+            }
+
+            teacherRepository.save(teacher);                 // προαιρετικό γιατί υπάρχει dirty check - είναι managed
+            log.info("Teacher with VAT={} update successfully.", dto.vat());
+            return mapper.mapToTeacherReadOnlyDTO(teacher);  // επιστρέφουμε τον ανανεωμένο teacher στο DTO
+        } catch(EntityNotFoundException e) {
+            log.warn("Update failed for teacher with uuid={}. Teacher not found", dto.uuid());
+            throw e;
+        } catch(EntityAlreadyExistsException e) {
+            log.warn("Update failed for teacher with uuid={}. Teacher already exists", dto.uuid());
+            throw e;
+        } catch(EntityInvalidArgumentException e) {
+            log.warn("Update failed for teacher with uuid={}. Region with id={} invalid", dto.uuid(), dto.regionId());
+            throw e;
+        }
     }
 
     @Override

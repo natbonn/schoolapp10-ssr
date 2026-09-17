@@ -23,6 +23,6 @@ public record TeacherEditDTO(
         String vat,
 
         @NotNull
-        Long regionID
+        Long regionId
 ) {
 }
