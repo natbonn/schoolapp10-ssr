@@ -90,7 +90,6 @@ public class TeacherController {
         model.addAttribute("teachers", teachersPage.getContent());          // API του Page για να φέρνει τα data LIST
         model.addAttribute("page", teachersPage);
         return "teachers";                        // html page
-
     }
 
 

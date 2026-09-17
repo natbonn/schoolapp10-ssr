@@ -72,6 +72,10 @@ public class TeacherService implements ITeacherService {
         }
     }
 
+    public TeacherReadOnlyDTO updateTeacher(TeacherEditDTO dto) {
+
+    }
+
     @Override
     @Transactional(readOnly = true)            // query read only δεν κάνει αλλαγές
     public Page<TeacherReadOnlyDTO> getPaginatedTeachersDeletedFalse(Pageable pageable) {
