@@ -22,8 +22,8 @@ public class Mapper {
         return new RegionReadOnlyDTO(region.getId(), region.getName());
     }
 
-    public TeacherEditReadOnlyDTO mapToTeacherEditReadOnlyDTO(Teacher teacher) {
-        return new TeacherEditReadOnlyDTO(teacher.getUuid(), teacher.getFirstname(),
+    public TeacherEditDTO mapToTeacherEditDTO(Teacher teacher) {
+        return new TeacherEditDTO(teacher.getUuid(), teacher.getFirstname(),
                 teacher.getLastname(), teacher.getVat(), teacher.getRegion().getId());
     }
 }

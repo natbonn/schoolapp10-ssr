@@ -143,13 +143,13 @@ public class TeacherService implements ITeacherService {
 
     @Override
     @Transactional(readOnly = true)               // επειδή είναι query
-    public TeacherEditReadOnlyDTO getTeacherByUUIDDeletedFalse(UUID uuid) throws EntityNotFoundException {
+    public TeacherEditDTO getTeacherByUUIDDeletedFalse(UUID uuid) throws EntityNotFoundException {
 
         try {
             Teacher teacher = teacherRepository.findByUuidAndDeletedFalse(uuid)
                     .orElseThrow(() -> new EntityNotFoundException("Teacher with uuid=" + uuid + " not found"));
             log.debug("Teacher with uuid={} returned successfully.", uuid);
-            return mapper.mapToTeacherEditReadOnlyDTO(teacher);
+            return mapper.mapToTeacherEditDTO(teacher);
         } catch(EntityNotFoundException e) {
             log.warn("Get teacher with uuid={} not found", uuid);
             throw e;
