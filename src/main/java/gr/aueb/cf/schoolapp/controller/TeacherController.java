@@ -3,6 +3,7 @@ package gr.aueb.cf.schoolapp.controller;
 import gr.aueb.cf.schoolapp.core.exceptions.EntityAlreadyExistsException;
 import gr.aueb.cf.schoolapp.core.exceptions.EntityInvalidArgumentException;
 import gr.aueb.cf.schoolapp.dto.RegionReadOnlyDTO;
+import gr.aueb.cf.schoolapp.dto.TeacherEditDTO;
 import gr.aueb.cf.schoolapp.dto.TeacherInsertDTO;
 import gr.aueb.cf.schoolapp.dto.TeacherReadOnlyDTO;
 import gr.aueb.cf.schoolapp.model.Teacher;
@@ -18,13 +19,11 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.UUID;
 
 @Controller
 @RequestMapping("/teachers")         // base path
@@ -90,6 +89,11 @@ public class TeacherController {
         model.addAttribute("teachers", teachersPage.getContent());          // API του Page για να φέρνει τα data LIST
         model.addAttribute("page", teachersPage);
         return "teachers";                        // html page
+    }
+
+    @GetMapping("/edit/{uuid}")                   // for specific uuid & θέλει @PathVariable - ή ως query params μπορούμε
+    public String getTeacherEdit(@PathVariable UUID uuid, Model model) {
+        TeacherEditDTO teacherEditDTO = teacherService.
     }
 
 

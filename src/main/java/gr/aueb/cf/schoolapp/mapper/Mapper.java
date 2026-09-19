@@ -1,8 +1,6 @@
 package gr.aueb.cf.schoolapp.mapper;
 
-import gr.aueb.cf.schoolapp.dto.RegionReadOnlyDTO;
-import gr.aueb.cf.schoolapp.dto.TeacherInsertDTO;
-import gr.aueb.cf.schoolapp.dto.TeacherReadOnlyDTO;
+import gr.aueb.cf.schoolapp.dto.*;
 import gr.aueb.cf.schoolapp.model.Region;
 import gr.aueb.cf.schoolapp.model.Teacher;
 import org.springframework.stereotype.Component;
@@ -22,5 +20,10 @@ public class Mapper {
 
     public RegionReadOnlyDTO mapToRegionReadOnlyDTO(Region region) {
         return new RegionReadOnlyDTO(region.getId(), region.getName());
+    }
+
+    public TeacherEditReadOnlyDTO mapToTeacherEditReadOnlyDTO(Teacher teacher) {
+        return new TeacherEditReadOnlyDTO(teacher.getUuid(), teacher.getFirstname(),
+                teacher.getLastname(), teacher.getVat(), teacher.getRegion().getId());
     }
 }
