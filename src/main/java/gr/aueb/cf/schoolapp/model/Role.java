@@ -24,9 +24,9 @@ public class Role {
     private String name;
 
     @Setter(AccessLevel.NONE)
-    @Getter(AccessLevel.PROTECTED)
+    @Getter(AccessLevel.PACKAGE)
     @OneToMany(mappedBy = "role", fetch = FetchType.LAZY)
-    private Set<User> users = new HashSet<>();
+    private Set<User> users = new HashSet<>();      // Collection
 
     @Setter(AccessLevel.NONE)
     @Getter(AccessLevel.PACKAGE)

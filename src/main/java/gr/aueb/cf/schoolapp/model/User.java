@@ -17,7 +17,7 @@ import java.util.*;
 @Getter
 @Setter
 @Table(name = "users")
-public class User extends AbstractEntity implements UserDetails {
+public class User extends AbstractEntity implements UserDetails {              // API SB είναι ο principal user
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,13 +43,14 @@ public class User extends AbstractEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Set<GrantedAuthority> grantedAuthorities =  new HashSet<>();
+        Set<GrantedAuthority> grantedAuthorities =  new HashSet<>();         // περιέχει ρόλους & δικαιώματα
         grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
-        role.getCapabilities()
+        role.getCapabilities()        // βάζει μέσα στο Collection
                 .forEach(capability -> grantedAuthorities.add(new SimpleGrantedAuthority(capability.getName())));
         return grantedAuthorities;
     }
 
+    // Έλεγχοι κατά το login
     @Override
     public boolean isAccountNonExpired() {
         return true;
@@ -70,6 +71,7 @@ public class User extends AbstractEntity implements UserDetails {
         return !isDeleted();
     }
 
+    // Επειδή είναι μέσα στους ρόλους ως Collection υλοποιούμε:
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
