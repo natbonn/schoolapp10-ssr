@@ -7,9 +7,11 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @Configuration           // μπορούνε οι μέθοδοι της να δημιουργούν beans (@Bean config)
 @EnableWebSecurity       // filter security
@@ -17,12 +19,15 @@ import org.springframework.security.web.SecurityFilterChain;
 @RequiredArgsConstructor // DI
 public class SecurityConfig {
 
-    // auth success handler
-    // auth failure handler ως dependencies
+    // ως dependencies αφού τα υλοποιήσουμε - το πρώτο είναι Interface που κάνει implement ο δικός μας handler - είναι το ίδιο ακόμα και Custom...
+    private final AuthenticationSuccessHandler authSuccessHandler;         // inject το δικό μας Bean (instance)
+    private final CustomAuthenticationFailureHandler authFailureHandler;
+
 
     @Bean    // θα ορίσουμε τα φίλτρα για όλους τους controller οριζίντιοι έλεγχοι - από το ειδικό στο γενικό
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+//                .csrf(AbstractHttpConfigurer::disable)   // Cross-Site Request Forgery - SOS για security - default enabled
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/", "/index.html").permitAll()
                         .requestMatchers("/login").permitAll()
@@ -41,8 +46,8 @@ public class SecurityConfig {
                 )
                 .formLogin(formLogin -> formLogin
                         .loginPage("/login")               // GET /login - ορίζουμε τη δική μας login page - κάνουμε overwrite της SB
-//                        .successHandler(auth success handler)
-//                        .failureHandler(failure handler)
+                        .successHandler(authSuccessHandler)        // inject
+                        .failureHandler(authFailureHandler)        // inject
                 )
                 .logout(logout -> logout
                         .logoutSuccessUrl("/login?logout=")   // δουλεύει με POST
