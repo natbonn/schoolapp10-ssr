@@ -6,9 +6,11 @@ import jakarta.validation.constraints.Size;
 
 // TODO Localization
 public record TeacherInsertDTO(
-        // bean validationm
-        @NotNull(message = "Το όνομα δεν μπορεί να είναι κενό")
-        @Size(min = 2, message = "Το όνομα πρέπει να περιέχει τουλάχιστον 2 χαρακτήρες.")
+        // bean validation
+//        @NotNull(message = "Το όνομα δεν μπορεί να είναι κενό")
+//        @Size(min = 2, message = "Το όνομα πρέπει να περιέχει τουλάχιστον 2 χαρακτήρες.")
+        @NotNull()
+        @Size(min = 2)
         String firstname,
         @NotNull(message = "Το επώνυμο δεν μπορεί να είναι κενό")
         @Size(min = 2, message = "Το επώνυμο πρέπει να περιέχει τουλάχιστον 2 χαρακτήρες.")
