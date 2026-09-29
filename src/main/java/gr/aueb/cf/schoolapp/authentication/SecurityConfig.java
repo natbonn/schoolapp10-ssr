@@ -32,7 +32,7 @@ public class SecurityConfig {
                         .requestMatchers("/", "/index.html").permitAll()
                         .requestMatchers("/login").permitAll()
                         .requestMatchers("/users/register", "/users/success").permitAll()
-                        .requestMatchers(HttpMethod.GET, "users/success").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/users/user-success").permitAll()
                         .requestMatchers("/teachers/insert").hasAuthority("INSERT_TEACHER")
                         .requestMatchers(HttpMethod.GET, "/teachers/edit/{uuid}").hasAuthority("EDIT_TEACHER")
                         .requestMatchers(HttpMethod.POST, "/teachers/edit").hasAuthority("EDIT_TEACHER")
