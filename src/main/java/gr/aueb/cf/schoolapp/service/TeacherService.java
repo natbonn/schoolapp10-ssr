@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,6 +46,7 @@ public class TeacherService implements ITeacherService {
 
 
     @Override
+    @PreAuthorize("hasAuthority('INSERT_TEACHER')")
     // προστατεύει από RuntimeExceptions & θέλουμε και στα δικά μας
     // το rollback μας νοιάζει σε πράξεις που αλλάζουν τη βάση (όχι αν κάνουμε Select)
     @Transactional(rollbackFor = {EntityAlreadyExistsException.class, EntityInvalidArgumentException.class})
@@ -79,6 +81,7 @@ public class TeacherService implements ITeacherService {
     }
 
     @Override
+    @PreAuthorize("hasAuthority('EDIT_TEACHER')")
     @Transactional(rollbackFor = {EntityNotFoundException.class, EntityInvalidArgumentException.class, EntityAlreadyExistsException.class})
     public TeacherReadOnlyDTO updateTeacher(TeacherEditDTO dto)
             throws EntityNotFoundException, EntityAlreadyExistsException, EntityInvalidArgumentException {
@@ -124,6 +127,7 @@ public class TeacherService implements ITeacherService {
     }
 
     @Override
+    @PreAuthorize("hasAuthority('VIEW_TEACHERS')")
     @Transactional(readOnly = true)            // query read only δεν κάνει αλλαγές
     public Page<TeacherReadOnlyDTO> getPaginatedTeachersDeletedFalse(Pageable pageable) {
         Page<Teacher> teachersPage = teacherRepository.findAllByDeletedFalse(pageable);
@@ -133,6 +137,7 @@ public class TeacherService implements ITeacherService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional(readOnly = true)            // query read only δεν κάνει αλλαγές
     public Page<TeacherReadOnlyDTO> getPaginatedTeachers(Pageable pageable) {
         Page<Teacher> teachersPage = teacherRepository.findAll(pageable);          // .findAll λόγω extending JPΑ που κανει extends τη PagingAndSortingRepository
@@ -157,12 +162,14 @@ public class TeacherService implements ITeacherService {
     }
 
     @Override
+    @PreAuthorize("hasAuthority('DELETE_TEACHER')")
     @Transactional(rollbackFor = EntityNotFoundException.class)
     public TeacherReadOnlyDTO deleteTeacherByUUID(UUID uuid) throws EntityNotFoundException {
 
         try {
             Teacher teacher = teacherRepository.findByUuidAndDeletedFalse(uuid)
                     .orElseThrow(() -> new EntityNotFoundException("Teacher with uuid=" + uuid + " not found"));
+
             teacher.softDelete();
             // no explicit save needed due to dirty checking
             // teacherRepository.save(teacher);
